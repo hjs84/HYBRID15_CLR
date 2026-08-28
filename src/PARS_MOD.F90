@@ -1,13 +1,12 @@
 module PARS_MOD
 !----------------------------------------------------------------------!
 implicit none
-real, parameter :: u_min = 0.1
-integer, parameter :: n6hr = 1460
 !----------------------------------------------------------------------!
 integer, parameter :: ndays   =   365
 integer, parameter :: nt      =    48
 integer, parameter :: nland   = 67420
 integer, parameter :: ntimes  = 17520
+integer, parameter :: n6hr    =  1460
 integer, parameter :: nlon    =   720
 integer, parameter :: nlat    =   360
 integer, parameter :: n_pools =     8
