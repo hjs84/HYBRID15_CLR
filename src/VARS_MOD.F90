@@ -1,10 +1,6 @@
 module VARS_MOD
 use PARS_MOD
 implicit none
-integer :: kt_6hr
-real    :: tmp_global_dummy, pre_global_dummy, tswrf_global_dummy
-real    :: dlwrf_global_dummy, spfh_global_dummy
-real    :: pres_global_dummy, ugrd_global_dummy
 character (len=200) :: home_dir
 character (len=  4) :: cyr
 character (len=200) :: filename
@@ -17,6 +13,7 @@ integer :: kyr_ce
 integer :: ikyr
 integer :: kday
 integer :: kt
+integer :: kt_6hr
 integer :: it
 integer :: ihr
 integer :: ic_count
