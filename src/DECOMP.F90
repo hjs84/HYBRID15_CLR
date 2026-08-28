@@ -23,6 +23,7 @@ do kl = 1, nlayers
   ! Temperature and sm modifiers from Manas code (EightPoolCenturyMod.F90)
   !--------------------------------------------------------------------!
   tmod = q10 ** ((T_soil (kl) - T_ref) / 10.0)
+  !tmod = q10 ** ((T_soil_daily_mean (kl) - T_ref) / 10.0)
   tmod = min (one, tmod)
   tmod = max (zero, tmod)
   !--------------------------------------------------------------------!

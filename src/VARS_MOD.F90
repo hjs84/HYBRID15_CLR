@@ -1,6 +1,10 @@
 module VARS_MOD
 use PARS_MOD
 implicit none
+integer :: kt_6hr
+real    :: tmp_global_dummy, pre_global_dummy, tswrf_global_dummy
+real    :: dlwrf_global_dummy, spfh_global_dummy
+real    :: pres_global_dummy, ugrd_global_dummy
 character (len=200) :: home_dir
 character (len=  4) :: cyr
 character (len=200) :: filename
@@ -204,6 +208,30 @@ real :: L_ann ! g[C] m-2 yr-1
 real :: Raut_ann ! g[C] m-2 yr-1
 real :: Rhet_ann ! g[C] m-2 yr-1
 real :: NEE_ann ! g[C] m-2 yr-1
+!!
+real :: NEE
+real :: NEE_day
+real :: G_day
+integer :: its
+real :: TC_sum
+real :: sm_sum
+real, dimension (2) :: T_soil_daily_mean
+real, dimension (2) :: T_soil_daily_sum
+real :: depth_layer1
+real :: depth_layer2
+integer :: n_layer1_nodes 
+integer :: n_layer2_nodes 
+real :: TC_daily_mean
+real :: sm_daily_mean
+real :: T_soil_new
+real :: mixing_factor
+real :: sum_temp_1
+real :: sum_temp_2
+real :: air_temp_fluctuation
+real, dimension(nz) :: T_new
+real, dimension(nz) :: T_profile
+real :: RECO_day
+!!
 real, allocatable, dimension (:,:) :: tmp_global   ! K
 real, allocatable, dimension (:,:) :: pre_global   ! mm/6-hr
 real, allocatable, dimension (:,:) :: tswrf_global ! W m-2

@@ -1,11 +1,13 @@
 module PARS_MOD
 !----------------------------------------------------------------------!
 implicit none
+real, parameter :: u_min = 0.1
+integer, parameter :: n6hr = 1460
 !----------------------------------------------------------------------!
 integer, parameter :: ndays   =   365
 integer, parameter :: nt      =    48
 integer, parameter :: nland   = 67420
-integer, parameter :: ntimes  =  1460
+integer, parameter :: ntimes  = 17520
 integer, parameter :: nlon    =   720
 integer, parameter :: nlat    =   360
 integer, parameter :: n_pools =     8
@@ -131,7 +133,7 @@ real, parameter :: tau_SOM = 2.0 * 60.0 * 60.0 * 24.0 * 365.0
 real, parameter :: q10     = 2.0  ! from Manas namelist
 real, parameter :: T_ref   = 25.0 ! from Manas namelist
 ! Calibrated to obs of High Fen.
-real, parameter :: theta_sat = 0.7 ! Saturated vol. cont. (mm/mm)
+real, parameter :: theta_sat = 0.6 ! Saturated vol. cont. (mm/mm)
 real, parameter :: saturation_to_field_capacity = one / 0.7 !1.72
 real, parameter :: saturation_to_minimum = &
                    saturation_to_field_capacity * 1505.0 / 250.0
@@ -228,5 +230,14 @@ real, parameter :: R = 8.314463
 real, parameter :: Rv  = 1.0e3 * R / Mw  ! J kg-1 K-1
 ! Dry air specific gas constant (J kg-1 K-1)
 real, parameter :: Ra_gas  = 1.0e3 * R / Ma  ! J kg-1 K-1
+!----------------------------------------------------------------------!
+! For soil temp
+!----------------------------------------------------------------------!
+integer, parameter :: nz = 41                 ! Spatial nodes (2.0 m column)
+real, parameter    :: dz_soil = 0.05          ! Spatial node spacing (m)
+real, parameter    :: D_soil = 0.00027179     ! Soil thermal diffusivity (m2/s)
+real, parameter    :: param_a = 0.84584       ! Surface amplitude scaling coefficient
+real, parameter    :: param_b = 0.22539       ! Surface thermal offset parameter
+real, parameter    :: mean_air_temp = 10.9    ! Long-term/site mean temp (deg C)
 !----------------------------------------------------------------------!
 end module PARS_MOD

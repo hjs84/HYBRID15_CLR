@@ -19,14 +19,13 @@ write (*,*)
 write (*,*) 'Starting INIT'
 call INIT
 !----------------------------------------------------------------------!
-T_profile (:) = mean_air_temp
-T_soil_daily_mean (:) = mean_air_temp
-T_soil (:) = mean_air_temp
+T_profile(:) = mean_air_temp
+T_soil_daily_mean = mean_air_temp
+T_soil = mean_air_temp
 !----------------------------------------------------------------------!
 kyr_ce = syr
 do ikyr = 1, nyr_sim
-  C0 = CDM * biomass + sum (c_state)
-  W0 = sm (1) + sm (2) + Wcan
+  Cbal = CDM * biomass + sum (c_state)
   ca_fmol = co2_ppm (kyr_ce) / 1.0e6 ! mol[CO2] mol[air]-1
   Raut_ann = zero ! Annual autotrophic respiration       (g[C] m-2 yr-1)
   GPP_ann  = zero ! Annual gross primary production      (g[C] m-2 yr-1)
@@ -39,19 +38,16 @@ do ikyr = 1, nyr_sim
   it = 0
   do kday = 1, ndays
     hr = 0.0 - dt_hr
-    TC_day   = zero
-    LE_day   = zero
-    sm_day   = zero
-    PPT_day  = zero
+    TC_day = zero
+    LE_day = zero
+    sm_day = zero
     GPP_day  = zero
     Raut_day = zero
     total_litter_day = zero
     leaching_water_day = zero
-    G_day = zero
-    T_soil_daily_sum = zero
     do kt = 1, nt
       !----------------------------------------------------------------!
-      it = it + 1
+      if (mod (kt-1,12) == 0) it = it + 1
       !----------------------------------------------------------------!
       hr = hr + dt_hr
       !----------------------------------------------------------------!
@@ -59,7 +55,7 @@ do ikyr = 1, nyr_sim
       !----------------------------------------------------------------!
       tmp_l   = tmp   (ikyr,it) ! Air temperature                    (K)
       TC      = tmp_l - tf      ! Air temperature                   (oC)
-      pre_l   = pre   (ikyr,it) ! Precipitation                   (mm/s)
+      pre_l   = pre   (ikyr,it) ! Precipitation                (mm/6-hr)
       tswrf_l = tswrf (ikyr,it) ! Tot dnwd SW flx, sfc, time mean (W/m2)
       dlwrf_l = dlwrf (ikyr,it) ! Dnwd LW rad flx                 (W/m2)
       spfh_l  = spfh  (ikyr,it) ! Specific humidity              (kg/kg)
@@ -69,11 +65,25 @@ do ikyr = 1, nyr_sim
       !----------------------------------------------------------------!
       TC_day = TC_day + TC
       !----------------------------------------------------------------!
-      write (20, '(3i6, f6.1, 8f12.4, 15f16.10)') kyr_ce, kday, kt, &
-            hr, T_soil(1), T_soil(2), T_soil_daily_mean(1), &
-            T_soil_daily_mean(2), tmp_l, co2_ppm(kyr_ce), sm(1), &
-            sm(2), gpp, Raut, aet, G, Rhet, npp, pre_l, sm_q, gpp_day, &
-            Raut_day, Rhet_day, biomass, LE, TC, perc
+      write (20, '(3(i0,","), f0.2,",", &
+            &2(f0.4,","), &
+            &5(f0.4,","), &
+            &4(f0.10,","), &
+            &3(f0.10,","), &
+            &1(f0.4,","), &
+            &4(f0.10,","), &
+            &1(f0.4,","), &
+            &2(f0.10,","), &
+            &f0.10)') &
+      kyr_ce, kday, kt, hr,               &
+      T_soil, tmp_l,         &
+      co2_ppm(kyr_ce), swc(1), swc(2), sm(1), sm(2),         &
+      gpp, Raut, AET, PET,                     &
+      co2, Rhet, npp,                  &
+      gs_crown,                           &
+      litter, gpp_day, Raut_day, Rhet_day,                   &
+      biomass,                            &
+      LE, TC, perc
       !----------------------------------------------------------------!
       ! Compute crown photosynthesis, respiration, and conductance.
       !----------------------------------------------------------------!
@@ -90,8 +100,7 @@ do ikyr = 1, nyr_sim
       !----------------------------------------------------------------!
       ! g[DM] m-2 day-1
       !----------------------------------------------------------------!
-      total_litter_day (1) = total_litter_day (1) + dt_s * litter
-      G_day = G_day + dt_s * G
+      total_litter_day = total_litter_day + dt_s * litter
       !----------------------------------------------------------------!
       ! Water leaching in day (cm day-1)
       !----------------------------------------------------------------!
@@ -99,10 +108,7 @@ do ikyr = 1, nyr_sim
       !----------------------------------------------------------------!
       ! Mean daily soil moisture (mm)
       !----------------------------------------------------------------!
-      do kl = 1, nlayers
-        sm_day (kl) = sm_day (kl) + sm (kl)
-        T_soil_daily_sum (kl) = T_soil_daily_sum (kl) + T_soil (kl)
-      end do
+      sm_day = sm_day + sm (1)
       !----------------------------------------------------------------!
       ! Mean daily latent heat flux (mm)
       !----------------------------------------------------------------!
@@ -110,15 +116,12 @@ do ikyr = 1, nyr_sim
       !----------------------------------------------------------------!
       ! Accumulate daily diagnostics.
       !----------------------------------------------------------------!
-      PPT_day  = PPT_day  + dt_s * pre_l
       GPP_day  = GPP_day  + dt_s * gpp
       Raut_day = Raut_day + dt_s * Raut
+      T_soil_daily_sum = T_soil_daily_sum + T_soil
       !----------------------------------------------------------------!
       ! Accumulate annual diagnostics.
       !----------------------------------------------------------------!
-      PPT_ann  = PPT_ann  + dt_s * pre_l
-      RO_ann   = RO_ann   + dt_s * sm_q
-      ET_ann   = ET_ann   + dt_s * aet
       GPP_ann  = GPP_ann  + dt_s * gpp
       Raut_ann = Raut_ann + dt_s * Raut
       NEE_ann  = NEE_ann  + dt_s * (Raut - gpp)
@@ -132,8 +135,7 @@ do ikyr = 1, nyr_sim
     ! Mean daily temperature (oC)
     !------------------------------------------------------------------!
     TC_day = TC_day / float (nt)
-    T_soil_daily_mean (1) = T_soil_daily_sum (1) / float (nt)
-    T_soil_daily_mean (2) = T_soil_daily_sum (2) / float (nt)
+    T_soil_daily_mean = T_soil_daily_sum / real(nt)
     !------------------------------------------------------------------!
     ! Mean daily latent heat flux (W/m2)
     !------------------------------------------------------------------!
@@ -141,7 +143,7 @@ do ikyr = 1, nyr_sim
     !------------------------------------------------------------------!
     ! Mean daily soil moisture (mm)
     !------------------------------------------------------------------!
-    sm_day (:) = sm_day (:) / float (nt)
+    sm_day = sm_day / float (nt)
     !------------------------------------------------------------------!
     ! Daily leaching water for input to soil decomposition routine.
     !------------------------------------------------------------------!
@@ -153,16 +155,14 @@ do ikyr = 1, nyr_sim
     !------------------------------------------------------------------!
     ! Accumulate annual diagnostics.
     !------------------------------------------------------------------!
-    L_ann    = L_ann    + sum (total_litter_day (:))
+    L_ann    = L_ann    + total_litter_day
     Rhet_ann = Rhet_ann + day_s * Rhet
     NEE_ann  = NEE_ann  + day_s * Rhet
     !------------------------------------------------------------------!
     Rhet_day = day_s * Rhet
-    NEE_day = Raut_day + Rhet_day - GPP_day
     !------------------------------------------------------------------!
-    write (24,'(2i6,9f12.4)') kyr_ce, kday, NEE_day, GPP_day, &
-                              Raut_day, Rhet_day, PPT_day, LE_day, &
-                              G_day, sm_day (1), snowpack
+    write (24,'(2i5,6f12.4)') kyr_ce, kday, GPP_day, Raut_day, &
+                              Rhet_day, LE_day, sm_day, snowpack
     !------------------------------------------------------------------!
   end do ! kday
   !--------------------------------------------------------------------!
@@ -170,16 +170,9 @@ do ikyr = 1, nyr_sim
                            NEE_ann, L_ann, biomass, SOM, PPT_ann, &
                            RO_ann, ET_ann
   !--------------------------------------------------------------------!
-  C1 = CDM * biomass + sum (c_state) ! final C
-  Cbal = C1 & ! final C
-                         - C0 & ! initial C
+  write (23,*) 'Cbal = ', CDM * biomass + sum (c_state) & ! final C
+                         - Cbal & ! initial C
                          - (GPP_ann - Raut_ann - Rhet_ann) ! gains - losses
-  write (23,*) 'Cbal = ', Cbal
-  if (abs (Cbal) > 1.0) write (*,*) 'Cbal problem',Cbal
-  W1 = sm (1) + sm (2) + Wcan
-  Wbal = (W1-W0)-(PPT_ann-RO_ann-ET_ann)
-  write (23,*) 'Wbal = ',Wbal
-  if (abs(Wbal) > 1.0) write (*,*) 'Wbal problem',Wbal
   kyr_ce = kyr_ce + 1
   !--------------------------------------------------------------------!
 end do ! kyr
@@ -187,8 +180,6 @@ end do ! kyr
 close (20)
 close (23)
 close (24)
-call execute_command_line("awk '{$1=$1}1' OFS=, results/HYBRID15_CLR_dt_output.txt > results/HYBRID15_CLR_dt_output.csv")
-call execute_command_line("awk '{$1=$1}1' OFS=, results/HYBRID15_CLR_day_output.txt > results/HYBRID15_CLR_day_output.csv")
 write (*,*)
 write (*,*) 'HYBRID15_CLR finished'
 write (*,*)

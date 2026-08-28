@@ -3,7 +3,7 @@
 2025   ! nyr_co2
 250.0  ! dz (1) (mm)
 750.0  ! dz (2) (mm)
-0.25   ! theta (1) (m3/m3)
+0.60   ! theta (1) (m3/m3)
 0.25   ! theta (2) (m3/m3)
 0.0    ! snowpack (mm)
 0.0    ! Wcan (mm)

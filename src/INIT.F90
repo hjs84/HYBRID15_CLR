@@ -39,6 +39,11 @@ SM_MIN (:) = SM_MAX / saturation_to_minimum
 !----------------------------------------------------------------------!
 sm (1) = theta (1) * dz (1)
 sm (2) = SM_MAX (2) !theta (2) * dz (2)
+depth_layer1 = dz (1) / 1000 ! Thickness of layer 1 (m)
+depth_layer2 = dz (2) / 1000 ! Thickness of layer 2 (m)
+n_layer1_nodes = 1 + nint(depth_layer1 / dz_soil)
+n_layer2_nodes = 1 + nint((depth_layer1 + depth_layer2) / dz_soil)
+write (*,*) depth_layer1, depth_layer2, n_layer1_nodes, n_layer2_nodes
 !----------------------------------------------------------------------!
 ! Split SOM pools over layers in proportion to thicknesse.
 !----------------------------------------------------------------------!
@@ -70,11 +75,17 @@ allocate (pres (nyr_sim,ntimes))
 allocate (ugrd (nyr_sim,ntimes))
 allocate (vgrd (nyr_sim,ntimes))
 !----------------------------------------------------------------------!
-open (20, file = trim(home_dir)//'/CLR/HYBRID15_CLR/results/&
-     &HYBRID15_CLR_dt_output.txt', status = 'unknown')
+open (20, file = 'results/HYBRID15_CLR_dt_output.txt', status = 'unknown')
+write (20,'(4A6, 8A12, 15A16)') 'kyr_ce', 'kday', 'kt', 'hr', 'T_soil_1',&
+     &'T_soil_2', 'T_soilday_1', 'T_soilday_2',&
+     &'tmp_l', 'co2_ppm', 'sm_1', 'sm_2', 'gpp',&
+     &'Raut', 'aet', 'G', 'Rhet', 'npp', 'pre_l', 'sm_q', 'gpp_day',&
+     &'Raut_day', 'Rhet_day', 'biomass', 'LE', 'TC', 'perc'
 !----------------------------------------------------------------------!
-open (24, file = trim(home_dir)//'/CLR/HYBRID15_CLR/results/&
-     &HYBRID15_CLR_day_output.txt', status = 'unknown')
+open (24, file = 'results/HYBRID15_CLR_day_output.txt', status = 'unknown')
+write (24,'(2A6, 9A12)') 'kyr_ce', 'kday', 'NEE_day', 'GPP_day',&
+     &'Raut_day', 'Rhet_day', 'PPT_day', 'LE_day', 'G_day', 'sm_day',&
+     &'snowpack'
 !----------------------------------------------------------------------!
 ! Read all CO2 and climate forcings.
 !----------------------------------------------------------------------!
