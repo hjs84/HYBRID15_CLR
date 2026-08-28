@@ -19,7 +19,7 @@ do kyr_ce = syr, eyr
   write (*,*) 'Reading forcing data for year: ', kyr_ce
   write (cyr,'(i4)') kyr_ce
   do kt = 1, ntimes
-    kt_6hr = ((kt - 1) / 12) + 1
+!    kt_6hr = ((kt - 1) / 12) + 1
     read(77, *) &
       tmp   (ikyr, kt), &  ! Column 1: Temperature (K)
       pre   (ikyr, kt), &  ! Column 2: Precipitation (mm/s)

@@ -14,7 +14,7 @@ SOURCES = \
 	$(SRC_DIR)/HYDRO.F90				\
 	$(SRC_DIR)/GROW.F90				\
 	$(SRC_DIR)/DECOMP.F90				\
-        $(SRC_DIR)/SOILTEMP.F90                         \
+	$(SRC_DIR)/SOILTEMP.F90                         \
 	$(SRC_DIR)/HYBRID15_CLR.F90
 
 OBJECTS = $(patsubst $(SRC_DIR)/%.F90,$(BUILD_DIR)/%.o,$(SOURCES))
@@ -25,9 +25,6 @@ all: $(EXE)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
-
-#$(BUILD_DIR)/%.o: $(SRC_DIR)/%.F90 | $(BUILD_DIR)
-#	$(FC) $(FFLAGS) -J$(BUILD_DIR) -I$(BUILD_DIR) -c $< -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.F90 | $(BUILD_DIR)
 	$(FC) $(FFLAGS) -module $(BUILD_DIR) -I$(BUILD_DIR) -c $< -o $@

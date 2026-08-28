@@ -13,7 +13,7 @@ integer :: kyr_ce
 integer :: ikyr
 integer :: kday
 integer :: kt
-integer :: kt_6hr
+!integer :: kt_6hr
 integer :: it
 integer :: ihr
 integer :: ic_count
