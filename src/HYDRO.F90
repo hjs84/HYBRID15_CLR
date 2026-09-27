@@ -58,15 +58,16 @@ sm_q = sm_q + qflx_infl_excess
 ! layer is wetter.
 !----------------------------------------------------------------------!
 if (theta (1) > theta (2)) then
-  ftop = froot_top
+  froot (1) = froot_top
 else
-  ftop = 0.5
+  froot (1) = 0.5
 end if
+froot (2) = one - froot (1)
 !----------------------------------------------------------------------!
 ! Assuming no drainage from bottom and 90% roots in top layer.
 !----------------------------------------------------------------------!
-dsm (1) = qflx_infl - aet_surf - ftop * aet_soil - perc
-dsm (2) = perc - (one - ftop) * aet_soil
+dsm (1) = qflx_infl - aet_surf - froot (1) * aet_soil - perc
+dsm (2) = perc - froot (2) * aet_soil
 !----------------------------------------------------------------------!
 ! Place holder (cm tstep-1).
 !----------------------------------------------------------------------!
@@ -112,12 +113,12 @@ implicit none
 !----------------------------------------------------------------------!
 ! First use PM without isothermal correction.
 ! Eqn. 9 of sw85. W m-2
-! Latent heat of vapourisation; Henderson-Sellers, Google AI    (J kg-1)
+! Latent heat of vapourisation; Henderson-Sellers84    (J kg-1)
 ! Works really well cf. Jones new table.
 !----------------------------------------------------------------------!
 ! Latent heat of vapourisation of water                           (J/kg)
 !----------------------------------------------------------------------!
-lamb = (2503.0 - 2.386 * TC) * 1.0e3
+lamb = 1.91846e6 * (tmp_l / (tmp_l - 33.91)) ** 2
 !----------------------------------------------------------------------!
 !Lv = 1.91846e6 * (tmp_l / (tmp_l - 33.91)) ** 2
 gamma = pres_l * cp / (0.622 * lamb) ! Pa K-1
@@ -194,8 +195,9 @@ As = Rnets - G
 eLAI = min (4.0, LAI)
 !----------------------------------------------------------------------!
 ! Reference height where meteorological measurements are made        (m)
+! Changed to be absolute height as think that is what is meant.
 !----------------------------------------------------------------------!
-xh = height + xd
+xh = xd ! height + xd
 !----------------------------------------------------------------------!
 ! Zero-plane displacement, Eqn. 22 of shuttleworth85                 (m)
 !----------------------------------------------------------------------!
@@ -304,6 +306,12 @@ Cs = one / (one + Rs * Ra / (Rc * (Rs + Ra)))
 !----------------------------------------------------------------------!
 LEc_bulk = Cc * PMc
 LEs      = Cs * PMs
+!----------------------------------------------------------------------!
+! Adjust canopy surface water flux.
+!----------------------------------------------------------------------!
+PMw = Cc * PMw
+evap_can_surface = Cc * evap_can_surface
+!----------------------------------------------------------------------!
 LE = LEc_bulk + LEs + PMw
 !----------------------------------------------------------------------!
 ! Remove evaporation and drip from canopy surface (mm/s)
@@ -343,21 +351,27 @@ else if (TC >= (TS + DT)) then
 else
   x = ((TC - (TS - DT)) / ((TS + DT) - (TS - DT))) ** b_S
 end if
-rain = x * pre_l
-snow = pre_l - rain
-if ((day_s * rain) <= ((DDF_R - DDF_NR) / DDF_INC)) then
-  ddf = DDF_NR + ((DDF_R - DDF_NR) / DDF_INC) * rain
-else
-  ddf = DDF_NR
-end if
+rain = day_s * x * pre_l
+snow = day_s * pre_l - rain
+!----------------------------------------------------------------------!
+! Modified from Merz et al. (2022).
+!----------------------------------------------------------------------!
+ddf = DDF_NR + ((DDF_R - DDF_NR) / DDF_INC) * rain
+ddf = min (ddf, DDF_R)
+!----------------------------------------------------------------------!
 if (TC >= TM) then
   melt = ((TC - TM) * ddf)
 else
   melt = zero
 end if
 melt = min (melt, snowpack)
+snowpack = snowpack + snow - melt
+!----------------------------------------------------------------------!
+! Convert to mm s-1
+!----------------------------------------------------------------------!
 melt = melt / day_s
-snowpack = snowpack + dt_s * (snow - melt)
+rain = rain / day_s
+snow = snow / day_s
 !----------------------------------------------------------------------!
 end subroutine ADVANCE_SNOW
 !======================================================================!

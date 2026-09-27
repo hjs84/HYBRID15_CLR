@@ -13,7 +13,6 @@ integer :: kyr_ce
 integer :: ikyr
 integer :: kday
 integer :: kt
-!integer :: kt_6hr
 integer :: it
 integer :: ihr
 integer :: ic_count
@@ -84,7 +83,8 @@ real :: aet_soil, aet_surf
 real :: drip
 real :: rain
 real :: snow
-real :: ftop
+real, allocatable, dimension (:) :: froot
+real :: fsat
 real :: froot_top
 real :: W0, W1
 real :: C0, C1
@@ -184,7 +184,7 @@ real :: LE_day ! Mean daily latent heat flux (W/m2)
 real :: TC_day ! Mean daily temperature (oC)
 real :: denom
 real :: wfps
-real :: wmod
+real, allocatable, dimension (:) :: wmod
 real :: amod
 real :: texture_modifier
 real :: fm_shoot, fm_root

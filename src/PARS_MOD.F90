@@ -6,7 +6,6 @@ integer, parameter :: ndays   =   365
 integer, parameter :: nt      =    48
 integer, parameter :: nland   = 67420
 integer, parameter :: ntimes  = 17520
-!integer, parameter :: n6hr    =  1460
 integer, parameter :: nlon    =   720
 integer, parameter :: nlat    =   360
 integer, parameter :: n_pools =     8
@@ -75,9 +74,10 @@ real, parameter :: ddsp = 0.63
 real, parameter :: z0_max = 2.0
 !----------------------------------------------------------------------!
 ! Ratio of roughness length to canopy height (ratio)
-! Taken from debruin85.
+! Taken from debruin85: 0.07
+! Changed to value from shuttleworth85 (eq. 22), 0.13
 !----------------------------------------------------------------------!
-real, parameter :: dz0 = 0.07
+real, parameter :: dz0 = 0.13
 !----------------------------------------------------------------------!
 ! von Karman's constanct                                 (dimensionless)
 !----------------------------------------------------------------------!
@@ -108,15 +108,15 @@ real, parameter :: Ksoil_sat = 10**4 ! dewar21 (mol m-2 s-1 MPa-1)
 real, parameter :: Kx        = 0.01 !0.01 dewar21; ! 3.0e-5 optimised
 real, parameter :: Oi        = 210.0e-3 ! mol mol-1
 real, parameter :: lwp_crit  = -2.0 ! dewar18
-real, parameter :: gmin      = 5.0e-3
-real, parameter :: gmax      = 0.180
+real, parameter :: gmin      = 0.017 ! duursmas19
+real, parameter :: gmax      = 1.80 ! taylor12
 real, parameter :: KPh       = exp (0.00963 * (0.02 / 0.001) - 2.43)
 real, parameter :: KPAR      = 0.65
 real, parameter :: Mw        = 18.015 ! g mol-1
 real, parameter :: Ma        = 28.97  ! g mol-1
 real, parameter :: MC        = 12.011 ! g[C] mol[C]-1
 real, parameter :: asw       = 0.12   ! https://doi.org/10.1029/2020JD033582
-real, parameter :: emm       = 0.99   ! Google AI
+real, parameter :: emm       = 0.95   ! https://nph.onlinelibrary.wiley.com/doi/10.1111/nph.16909
 real, parameter :: sb        = 5.67e-8 ! W m-2 K-4
 real, parameter :: cp        = 1012.0! J kg-1 K-1
 real, parameter :: CDM       = 0.474 ! from hybrid14_4; g[C] g[DM]-1

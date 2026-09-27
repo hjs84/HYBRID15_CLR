@@ -35,13 +35,13 @@ do kl = 1, nlayers
   ! Eqn. 54 of Friend et a (1997).
   !wfps = 100.0 * theta (kl) / (saturation_to_field_capacity * swc_field_capacity)
   wfps = 100.0 * theta (kl) / theta_sat
-  wmod = exp (((wfps - wfps_threshold) ** 2) / (-moisture_dry_width))
-  wmod = min (one, wmod)
-  wmod = max (zero, wmod)
+  wmod (kl) = exp (((wfps - wfps_threshold) ** 2) / (-moisture_dry_width))
+  wmod (kl) = min (one, wmod (kl))
+  wmod (kl) = max (zero, wmod (kl))
   !--------------------------------------------------------------------!
   ! Combined temperature and water decay modifier.
   !--------------------------------------------------------------------!
-  amod = tmod * wmod
+  amod = tmod * wmod (kl)
   !--------------------------------------------------------------------!
   ! Active SOM turns over more slowly in fine-textured soils.  The term
   ! 1.0 - 0.75 * (silt + clay) reduces active SOM decay when silt + clay

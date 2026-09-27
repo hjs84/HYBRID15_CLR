@@ -30,6 +30,12 @@ end do
 read (11,*) fiSOM
 close (11)
 !----------------------------------------------------------------------!
+! Decomposition WFPS modifier                                   (scalar)
+!----------------------------------------------------------------------!
+allocate (wmod (nlayers))
+!----------------------------------------------------------------------!
+allocate (froot (nlayers))
+!----------------------------------------------------------------------!
 ! Assume SM_MAX is saturated water content (porosity) and all soil is
 ! peat. Using Eqn. 7.90 of oleson and theta_sat_om = 0.9. But obs
 ! suggest 0.7, so calibrate down to that.
@@ -100,7 +106,7 @@ write (*,'(a125)') '   CE   g[C]/m/yr   g[C]/m/yr   g[C]/m/yr&
                &     mm yr-1    mm yr-1      mm yr-1'
 !----------------------------------------------------------------------!
 do kl = 1, nlayers
-c_state (:,kl) = pool_initial (:,kl)
+ c_state (:,kl) = pool_initial (:,kl)
 end do
 !----------------------------------------------------------------------!
 end subroutine INIT

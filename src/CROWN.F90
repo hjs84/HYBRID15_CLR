@@ -98,10 +98,24 @@ else
   swp = swp_max * (one / (rwc (2) ** bsoil)) ! friend95
 endif
 !----------------------------------------------------------------------!
+! Inhibition due to high soil water.
+!----------------------------------------------------------------------!
+fsat = 0.0
+do kl = 1, nlayers
+  wfps = 100.0 * theta (kl) / theta_sat
+  if (wfps > wfps_threshold) then
+    wmod (kl) = exp (((wfps - wfps_threshold) ** 2) / (-moisture_dry_width))
+    wmod (kl) = zero
+  else
+    wmod (kl) = one
+  endif
+  fsat = fsat + froot (kl) * wmod (kl)
+end do
+!----------------------------------------------------------------------!
 ! Values at top of crown.
 !----------------------------------------------------------------------!
-Vcmax_l = Vcmax_T * Vcmax_top
-Jmax_l = Jmax_T * Jmax_top
+Vcmax_l = fsat * Vcmax_T * Vcmax_top
+Jmax_l = fsat * Jmax_T * Jmax_top
 Q_l = Q_top
 !----------------------------------------------------------------------!
 ! Compute physiology for this level in crown.
