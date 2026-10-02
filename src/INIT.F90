@@ -106,7 +106,7 @@ write (*,'(a125)') '   CE   g[C]/m/yr   g[C]/m/yr   g[C]/m/yr&
                &     mm yr-1    mm yr-1      mm yr-1'
 !----------------------------------------------------------------------!
 do kl = 1, nlayers
- c_state (:,kl) = pool_initial (:,kl)
+  c_state (:,kl) = pool_initial (:,kl)
 end do
 !----------------------------------------------------------------------!
 end subroutine INIT
