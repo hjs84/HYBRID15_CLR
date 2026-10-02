@@ -132,7 +132,7 @@ real, parameter :: tau_SOM = 2.0 * 60.0 * 60.0 * 24.0 * 365.0
 real, parameter :: q10     = 2.0  ! from Manas namelist
 real, parameter :: T_ref   = 25.0 ! from Manas namelist
 ! Calibrated to obs of High Fen.
-real, parameter :: theta_sat = 0.6 ! Saturated vol. cont. (mm/mm)
+real, parameter :: theta_sat = 0.7 ! Saturated vol. cont. (mm/mm)
 real, parameter :: saturation_to_field_capacity = one / 0.7 !1.72
 real, parameter :: saturation_to_minimum = &
                    saturation_to_field_capacity * 1505.0 / 250.0
